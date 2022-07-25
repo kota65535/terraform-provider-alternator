@@ -3,7 +3,7 @@
 page_title: "alternator_database_schema Data Source - terraform-provider-alternator"
 subcategory: ""
 description: |-
-  Fetch MySQL database schemas.
+  Fetch SQL database schemas.
 ---
 
 # alternator_database_schema (Data Source)

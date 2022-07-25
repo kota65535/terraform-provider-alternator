@@ -11,7 +11,7 @@ import (
 func dataSourceAlternatorDatabaseSchema() *schema.Resource {
 	return &schema.Resource{
 		// This description is used by the documentation generator and the language server.
-		Description: "Fetch MySQL database schemas.",
+		Description: "Fetch SQL database schemas.",
 		ReadContext: dataSourceAlternatorDatabaseSchemaRead,
 
 		Schema: map[string]*schema.Schema{
