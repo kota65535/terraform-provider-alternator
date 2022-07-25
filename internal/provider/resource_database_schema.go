@@ -42,11 +42,24 @@ func resourceAlternatorDatabaseSchema() *schema.Resource {
 				Computed:    true,
 				Description: "Used by the provider internal.",
 			},
+			"statements": {
+				Type:        schema.TypeList,
+				Computed:    true,
+				Description: "Statements to execute on apply.",
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 		},
 		CustomizeDiff: func(ctx context.Context, d *schema.ResourceDiff, meta interface{}) error {
-			changed := d.Get("changed").(bool)
-			// On remote schema changed manually
-			if changed {
+			// We can easily detect change of the input variables in this way
+			localSchemaChanged := d.HasChange("schema")
+			// As for the computed variables, we cannot simply compare their old & new value,
+			// because their old value has already been updated to match the result of our read function.
+			// So we have to use the dedicated boolean computed variable.
+			// cf. https://discuss.hashicorp.com/t/force-new-resource-based-on-api-read-difference/29759/3
+			remoteSchemaChanged := d.Get("changed").(bool)
+			if localSchemaChanged || remoteSchemaChanged {
 				database := d.Get("database").(string)
 				schemaStr := d.Get("schema").(string)
 				pp := meta.(*ProviderParams)
@@ -55,18 +68,21 @@ func resourceAlternatorDatabaseSchema() *schema.Resource {
 					return err
 				}
 				// Read local schema
-				localSchema, err := client.ReadSchemas(schemaStr)
+				alt, _, localSchema, err := client.GetAlterations(schemaStr)
 				if err != nil {
 					return err
 				}
+				// Use local schema as new remote schema value to show diff on planing
 				newRemoteSchemaStr := ""
 				for _, s := range localSchema {
 					newRemoteSchemaStr += fmt.Sprintf("%s\n", s)
 				}
 				tflog.Debug(ctx, fmt.Sprintf("@diff remote_schema: %s", newRemoteSchemaStr))
+				tflog.Debug(ctx, fmt.Sprintf("@diff statements: %s", alt.Statements()))
 
-				// Set local schema content for the new remote_schema computed value to show diff on plan
 				err = d.SetNew("remote_schema", newRemoteSchemaStr)
+				// statements variable is only for showing diff on planning, and always empty value after applying it.
+				err = d.SetNew("statements", alt.Statements())
 				if err != nil {
 					return err
 				}
@@ -116,10 +132,11 @@ func resourceAlternatorDatabaseSchemaCreate(ctx context.Context, d *schema.Resou
 
 	tflog.Debug(ctx, fmt.Sprintf("@create remote_schema: %s", remoteSchemaStr))
 
-	// Currently database name is used for the resource id
+	// Currently database name is used for the resource ID
 	d.SetId(database)
 	d.Set("remote_schema", remoteSchemaStr)
 	d.Set("changed", false)
+	d.Set("statements", []string{})
 
 	return nil
 }
@@ -144,7 +161,6 @@ func resourceAlternatorDatabaseSchemaRead(ctx context.Context, d *schema.Resourc
 		remoteSchemaStr += fmt.Sprintf("%s\n", s)
 	}
 
-	// If true, we should show diff of remote schema on plan because it has been changed manually from outside
 	changed := len(alt.Statements()) > 0
 
 	tflog.Debug(ctx, fmt.Sprintf("@read remote_schema: %s", remoteSchemaStr))
@@ -152,6 +168,7 @@ func resourceAlternatorDatabaseSchemaRead(ctx context.Context, d *schema.Resourc
 
 	d.Set("remote_schema", remoteSchemaStr)
 	d.Set("changed", changed)
+	d.Set("statements", []string{})
 
 	return nil
 }
@@ -194,6 +211,7 @@ func resourceAlternatorDatabaseSchemaUpdate(ctx context.Context, d *schema.Resou
 
 	d.Set("remote_schema", remoteSchemaStr)
 	d.Set("changed", false)
+	d.Set("statements", []string{})
 
 	return nil
 }
