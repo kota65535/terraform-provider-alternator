@@ -1,7 +1,5 @@
 CREATE DATABASE `example2`
-    DEFAULT CHARACTER SET = utf8mb4
-    DEFAULT COLLATE = utf8mb4_0900_bin
-    DEFAULT ENCRYPTION = 'N';
+    DEFAULT COLLATE = utf8mb4_0900_bin;
 CREATE TABLE `example2`.`greeting`
 (
     `id`         int          NOT NULL AUTO_INCREMENT,
