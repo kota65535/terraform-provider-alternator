@@ -3,7 +3,7 @@ HOSTNAME=registry.terraform.io
 NAMESPACE=kota65535
 NAME=alternator
 BINARY=terraform-provider-${NAME}
-VERSION=0.0.38
+VERSION=0.0.51
 OS_ARCH=darwin_amd64
 
 default: install

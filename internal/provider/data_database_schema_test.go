@@ -9,7 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-func TestAccDataSourceAlternatorMySql(t *testing.T) {
+func TestAccDataSourceAlternatorDatabaseSchema(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		ProviderFactories: providerFactories,
 		Steps: []resource.TestStep{
@@ -28,20 +28,18 @@ func TestAccDataSourceAlternatorMySql(t *testing.T) {
 						panic(err)
 					}
 				},
-				Config: testAccDataSourceAlternatorMySqlInitialConfig(),
+				Config: testAccDataSourceAlternatorDatabaseSchemaInitialConfig(),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.alternator_mysql.main", "remote_schema", initialSchemaRemote),
+					resource.TestCheckResourceAttr("data.alternator_database_schema.main", "remote_schema", initialSchemaRemote),
 				),
 			},
 		},
 	})
 }
 
-func testAccDataSourceAlternatorMySqlInitialConfig() string {
+func testAccDataSourceAlternatorDatabaseSchemaInitialConfig() string {
 	return fmt.Sprint(`
-	data "alternator_mysql" "main" {
- 		host     = "localhost:23306"
-        user     = "root"
+	data "alternator_database_schema" "main" {
         database = "example"
 	}
 	`)

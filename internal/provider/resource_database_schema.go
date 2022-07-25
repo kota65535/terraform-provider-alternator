@@ -2,8 +2,6 @@ package provider
 
 import (
 	"context"
-	"crypto/sha1"
-	"encoding/hex"
 	"fmt"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -12,35 +10,22 @@ import (
 	"strings"
 )
 
-func resourceAlternatorMysql() *schema.Resource {
+func resourceAlternatorDatabaseSchema() *schema.Resource {
 	return &schema.Resource{
-		// This description is used by the documentation generator and the language server.
-		Description:   "Manage a MySQL database schema by Alternator.",
-		CreateContext: resourceAlternatorMySqlCreate,
-		ReadContext:   resourceAlternatorMySqlRead,
-		UpdateContext: resourceAlternatorMySqlUpdate,
-		DeleteContext: resourceAlternatorMySqlDelete,
-
+		Description:   "Manage MySQL database schemas by Alternator.",
+		CreateContext: resourceAlternatorDatabaseSchemaCreate,
+		ReadContext:   resourceAlternatorDatabaseSchemaRead,
+		UpdateContext: resourceAlternatorDatabaseSchemaUpdate,
+		DeleteContext: resourceAlternatorDatabaseSchemaDelete,
+		Importer: &schema.ResourceImporter{
+			StateContext: resourceAlternatorDatabaseSchemaImport,
+		},
 		Schema: map[string]*schema.Schema{
 			"database": {
 				Type:        schema.TypeString,
 				Required:    true,
+				ForceNew:    true,
 				Description: "Target database name",
-			},
-			"host": {
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "Host name to connect to",
-			},
-			"user": {
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: "User name to connect as",
-			},
-			"password": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "Password to be used if the server demands password authentication",
 			},
 			"schema": {
 				Type:        schema.TypeString,
@@ -58,15 +43,18 @@ func resourceAlternatorMysql() *schema.Resource {
 				Description: "Used by the provider internal",
 			},
 		},
-		CustomizeDiff: func(ctx context.Context, diff *schema.ResourceDiff, i interface{}) error {
-			changed := diff.Get("changed").(bool)
+		CustomizeDiff: func(ctx context.Context, d *schema.ResourceDiff, meta interface{}) error {
+			changed := d.Get("changed").(bool)
+			// On remote schema changed manually
 			if changed {
-				// Fetch current remote database schemas
-				schemaStr := diff.Get("schema").(string)
-				client, err := newAlternator(diff)
+				database := d.Get("database").(string)
+				schemaStr := d.Get("schema").(string)
+				pp := meta.(*ProviderParams)
+				client, err := newAlternator(database, pp)
 				if err != nil {
 					return err
 				}
+				// Read local schema
 				localSchema, err := client.ReadSchemas(schemaStr)
 				if err != nil {
 					return err
@@ -76,7 +64,12 @@ func resourceAlternatorMysql() *schema.Resource {
 					newRemoteSchemaStr += fmt.Sprintf("%s\n", s)
 				}
 				tflog.Debug(ctx, fmt.Sprintf("@diff remote_schema: %s", newRemoteSchemaStr))
-				diff.SetNew("remote_schema", newRemoteSchemaStr)
+
+				// Set local schema content for the new remote_schema computed value to show diff on plan
+				err = d.SetNew("remote_schema", newRemoteSchemaStr)
+				if err != nil {
+					return err
+				}
 			}
 
 			return nil
@@ -84,10 +77,12 @@ func resourceAlternatorMysql() *schema.Resource {
 	}
 }
 
-func resourceAlternatorMySqlCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAlternatorDatabaseSchemaCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	database := d.Get("database").(string)
 	schemaStr := d.Get("schema").(string)
+	pp := meta.(*ProviderParams)
 
-	client, err := newAlternator(d)
+	client, err := newAlternator(database, pp)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -102,6 +97,7 @@ func resourceAlternatorMySqlCreate(ctx context.Context, d *schema.ResourceData, 
 		}
 	}
 	for _, s := range statements {
+		tflog.Info(ctx, fmt.Sprintf("@create executing statements: %s", s))
 		_, err := client.Db.Exec(s)
 		if err != nil {
 			return diag.FromErr(err)
@@ -120,21 +116,20 @@ func resourceAlternatorMySqlCreate(ctx context.Context, d *schema.ResourceData, 
 
 	tflog.Debug(ctx, fmt.Sprintf("@create remote_schema: %s", remoteSchemaStr))
 
-	h := sha1.New()
-	h.Write([]byte(client.DbUri.Host + client.DbUri.DbName))
-	sha1 := hex.EncodeToString(h.Sum(nil))
-	d.SetId(sha1)
-
+	// Currently database name is used for the resource id
+	d.SetId(database)
 	d.Set("remote_schema", remoteSchemaStr)
 	d.Set("changed", false)
 
 	return nil
 }
 
-func resourceAlternatorMySqlRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAlternatorDatabaseSchemaRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	database := d.Get("database").(string)
 	schemaStr := d.Get("schema").(string)
+	pp := meta.(*ProviderParams)
 
-	client, err := newAlternator(d)
+	client, err := newAlternator(database, pp)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -149,6 +144,7 @@ func resourceAlternatorMySqlRead(ctx context.Context, d *schema.ResourceData, me
 		remoteSchemaStr += fmt.Sprintf("%s\n", s)
 	}
 
+	// If true, we should show diff of remote schema on plan because it has been changed manually from outside
 	changed := len(alt.Statements()) > 0
 
 	tflog.Debug(ctx, fmt.Sprintf("@read remote_schema: %s", remoteSchemaStr))
@@ -160,10 +156,12 @@ func resourceAlternatorMySqlRead(ctx context.Context, d *schema.ResourceData, me
 	return nil
 }
 
-func resourceAlternatorMySqlUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceAlternatorDatabaseSchemaUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	database := d.Get("database").(string)
 	schemaStr := d.Get("schema").(string)
+	pp := meta.(*ProviderParams)
 
-	client, err := newAlternator(d)
+	client, err := newAlternator(database, pp)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -175,7 +173,7 @@ func resourceAlternatorMySqlUpdate(ctx context.Context, d *schema.ResourceData, 
 		return diag.FromErr(err)
 	}
 	for _, s := range alt.Statements() {
-		tflog.Debug(ctx, fmt.Sprintf("Executing statements: %s", s))
+		tflog.Info(ctx, fmt.Sprintf("@update executing statements: %s", s))
 		_, err := client.Db.Exec(s)
 		if err != nil {
 			return diag.FromErr(err)
@@ -200,8 +198,10 @@ func resourceAlternatorMySqlUpdate(ctx context.Context, d *schema.ResourceData, 
 	return nil
 }
 
-func resourceAlternatorMySqlDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	client, err := newAlternator(d)
+func resourceAlternatorDatabaseSchemaDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	database := d.Get("database").(string)
+	pp := meta.(*ProviderParams)
+	client, err := newAlternator(database, pp)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -213,32 +213,32 @@ func resourceAlternatorMySqlDelete(ctx context.Context, d *schema.ResourceData, 
 		return diag.FromErr(err)
 	}
 	for _, s := range alt.Statements() {
-		tflog.Debug(ctx, fmt.Sprintf("Executing statements: %s", s))
+		tflog.Info(ctx, fmt.Sprintf("@delete executing statements: %s", s))
 		_, err := client.Db.Exec(s)
 		if err != nil {
 			return diag.FromErr(err)
 		}
 	}
 
+	d.SetId("")
+
 	return nil
 }
 
-type DataMap interface {
-	Get(key string) interface{}
+func resourceAlternatorDatabaseSchemaImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+	database := d.Id()
+	tflog.Debug(ctx, fmt.Sprintf("@import id = %s", database))
+	d.Set("database", database)
+	return []*schema.ResourceData{d}, nil
 }
 
-func newAlternator(d DataMap) (*cmd.Alternator, error) {
-	database := d.Get("database").(string)
-	host := d.Get("host").(string)
-	user := d.Get("user").(string)
-	password := d.Get("password").(string)
-
+func newAlternator(database string, p *ProviderParams) (*cmd.Alternator, error) {
 	dbUri := &cmd.DatabaseUri{
-		Dialect:  "mysql",
-		Host:     host,
+		Dialect:  p.Dialect,
+		Host:     p.Host,
+		User:     p.User,
+		Password: p.Password,
 		DbName:   database,
-		User:     user,
-		Password: password,
 	}
 
 	return cmd.NewAlternator(dbUri)

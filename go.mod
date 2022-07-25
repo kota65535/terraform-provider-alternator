@@ -5,8 +5,8 @@ go 1.18
 require (
 	github.com/hashicorp/terraform-plugin-log v0.6.0
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.19.0
-	github.com/kota65535/alternator v0.1.5
-	github.com/stretchr/testify v1.7.2
+	github.com/kota65535/alternator v0.1.7
+	github.com/stretchr/testify v1.8.0
 )
 
 require (
@@ -63,6 +63,7 @@ require (
 	github.com/spf13/cast v1.3.1 // indirect
 	github.com/spf13/cobra v1.5.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/stretchr/objx v0.4.0 // indirect
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
 	github.com/vmihailenco/msgpack/v4 v4.3.12 // indirect
 	github.com/vmihailenco/tagparser v0.1.1 // indirect
