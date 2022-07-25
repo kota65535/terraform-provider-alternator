@@ -8,7 +8,7 @@ description: |-
 
 # alternator_database_schema (Data Source)
 
-Fetch MySQL database schemas.
+Fetch SQL database schemas.
 
 ## Example Usage
 
@@ -23,11 +23,11 @@ data "alternator_database_schema" "example" {
 
 ### Required
 
-- `database` (String) Target database name
+- `database` (String) Target database name.
 
 ### Read-Only
 
 - `id` (String) The ID of this resource.
-- `remote_schema` (String) Actual remote database schema definition
+- `remote_schema` (String) Actual remote database schema definition.
 
 

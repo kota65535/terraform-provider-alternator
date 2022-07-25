@@ -35,5 +35,5 @@ provider "alternator" {
 
 - `dialect` (String) SQL dialect. Currently, only "mysql" is supported.
 - `host` (String) Host on which database server is located. If port number is not specified, the default value is used according to the SQL dialect (ex: mysql -> 3306).
-- `password` (String, Sensitive) Password to use when connecting to server
-- `user` (String) User name to use when connecting to server
+- `password` (String, Sensitive) Password to use when connecting to server.
+- `user` (String) User name to use when connecting to server.
