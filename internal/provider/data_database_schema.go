@@ -18,12 +18,12 @@ func dataSourceAlternatorDatabaseSchema() *schema.Resource {
 			"database": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "Target database name",
+				Description: "Target database name.",
 			},
 			"remote_schema": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Actual remote database schema definition",
+				Description: "Actual remote database schema definition.",
 			},
 		},
 	}

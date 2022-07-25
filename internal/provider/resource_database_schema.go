@@ -25,22 +25,22 @@ func resourceAlternatorDatabaseSchema() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 				ForceNew:    true,
-				Description: "Target database name",
+				Description: "Target database name.",
 			},
 			"schema": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "SQL Database schema definition, composed by DDL statements",
+				Description: "SQL Database schema definition, composed by DDL statements.",
 			},
 			"remote_schema": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "Actual remote database schema definition",
+				Description: "Actual remote database schema definition.",
 			},
 			"changed": {
 				Type:        schema.TypeBool,
 				Computed:    true,
-				Description: "Used by the provider internal",
+				Description: "Used by the provider internal.",
 			},
 		},
 		CustomizeDiff: func(ctx context.Context, d *schema.ResourceDiff, meta interface{}) error {

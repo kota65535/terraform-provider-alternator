@@ -39,7 +39,7 @@ func New() *schema.Provider {
 			"host": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "Host on which database server is located. If port number is not specified, the default value is used according to the SQL dialect (ex: mysql -> 3306). ",
+				Description: "Host on which database server is located. If port number is not specified, the default value is used according to the SQL dialect (ex: mysql -> 3306).",
 				DefaultFunc: schema.EnvDefaultFunc("ALTERNATOR_HOST", ""),
 			},
 			"dialect": {
@@ -52,14 +52,14 @@ func New() *schema.Provider {
 			"user": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: "User name to use when connecting to server",
+				Description: "User name to use when connecting to server.",
 				DefaultFunc: schema.EnvDefaultFunc("ALTERNATOR_USER", ""),
 			},
 			"password": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Sensitive:   true,
-				Description: "Password to use when connecting to server",
+				Description: "Password to use when connecting to server.",
 				DefaultFunc: schema.EnvDefaultFunc("ALTERNATOR_PASSWORD", ""),
 			},
 		},
