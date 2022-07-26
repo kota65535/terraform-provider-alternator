@@ -50,4 +50,10 @@ EOF
 - `remote_schema` (String) Actual remote database schema definition.
 - `statements` (List of String) Statements to execute on apply.
 
+## Import
 
+Import is supported using the following syntax:
+
+```shell
+$ terraform import alternator_database_schema.example example
+```

@@ -31,7 +31,7 @@ func dataSourceAlternatorDatabaseSchema() *schema.Resource {
 
 func dataSourceAlternatorDatabaseSchemaRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	database := d.Get("database").(string)
-	pp := meta.(*ProviderParams)
+	pp := meta.(*ProviderArguments)
 	client, err := newAlternator(database, pp)
 	if err != nil {
 		return diag.FromErr(err)

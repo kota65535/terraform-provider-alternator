@@ -38,9 +38,10 @@ func TestAccDataSourceAlternatorDatabaseSchema(t *testing.T) {
 }
 
 func testAccDataSourceAlternatorDatabaseSchemaInitialConfig() string {
-	return fmt.Sprint(`
+	return fmt.Sprintf(`
+	%s
 	data "alternator_database_schema" "main" {
         database = "example"
 	}
-	`)
+	`, provider)
 }

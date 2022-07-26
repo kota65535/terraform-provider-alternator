@@ -1,0 +1,1 @@
+$ terraform import alternator_database_schema.example example

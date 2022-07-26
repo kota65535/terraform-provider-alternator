@@ -62,7 +62,7 @@ func resourceAlternatorDatabaseSchema() *schema.Resource {
 			if localSchemaChanged || remoteSchemaChanged {
 				database := d.Get("database").(string)
 				schemaStr := d.Get("schema").(string)
-				pp := meta.(*ProviderParams)
+				pp := meta.(*ProviderArguments)
 				client, err := newAlternator(database, pp)
 				if err != nil {
 					return err
@@ -96,7 +96,7 @@ func resourceAlternatorDatabaseSchema() *schema.Resource {
 func resourceAlternatorDatabaseSchemaCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	database := d.Get("database").(string)
 	schemaStr := d.Get("schema").(string)
-	pp := meta.(*ProviderParams)
+	pp := meta.(*ProviderArguments)
 
 	client, err := newAlternator(database, pp)
 	if err != nil {
@@ -144,7 +144,7 @@ func resourceAlternatorDatabaseSchemaCreate(ctx context.Context, d *schema.Resou
 func resourceAlternatorDatabaseSchemaRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	database := d.Get("database").(string)
 	schemaStr := d.Get("schema").(string)
-	pp := meta.(*ProviderParams)
+	pp := meta.(*ProviderArguments)
 
 	client, err := newAlternator(database, pp)
 	if err != nil {
@@ -176,7 +176,7 @@ func resourceAlternatorDatabaseSchemaRead(ctx context.Context, d *schema.Resourc
 func resourceAlternatorDatabaseSchemaUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	database := d.Get("database").(string)
 	schemaStr := d.Get("schema").(string)
-	pp := meta.(*ProviderParams)
+	pp := meta.(*ProviderArguments)
 
 	client, err := newAlternator(database, pp)
 	if err != nil {
@@ -218,7 +218,8 @@ func resourceAlternatorDatabaseSchemaUpdate(ctx context.Context, d *schema.Resou
 
 func resourceAlternatorDatabaseSchemaDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	database := d.Get("database").(string)
-	pp := meta.(*ProviderParams)
+	pp := meta.(*ProviderArguments)
+
 	client, err := newAlternator(database, pp)
 	if err != nil {
 		return diag.FromErr(err)
@@ -250,7 +251,7 @@ func resourceAlternatorDatabaseSchemaImport(ctx context.Context, d *schema.Resou
 	return []*schema.ResourceData{d}, nil
 }
 
-func newAlternator(database string, p *ProviderParams) (*cmd.Alternator, error) {
+func newAlternator(database string, p *ProviderArguments) (*cmd.Alternator, error) {
 	dbUri := &cmd.DatabaseUri{
 		Dialect:  p.Dialect,
 		Host:     p.Host,

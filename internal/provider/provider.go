@@ -3,6 +3,7 @@ package provider
 import (
 	"context"
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"strings"
 
@@ -26,7 +27,7 @@ func init() {
 	}
 }
 
-type ProviderParams struct {
+type ProviderArguments struct {
 	Host     string
 	Dialect  string
 	User     string
@@ -40,27 +41,23 @@ func New() *schema.Provider {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "Host on which database server is located. If port number is not specified, the default value is used according to the SQL dialect (ex: mysql -> 3306).",
-				DefaultFunc: schema.EnvDefaultFunc("ALTERNATOR_HOST", ""),
 			},
 			"dialect": {
 				Type:         schema.TypeString,
 				Required:     true,
 				Description:  "SQL dialect. Currently, only \"mysql\" is supported.",
-				DefaultFunc:  schema.EnvDefaultFunc("ALTERNATOR_DIALECT", ""),
 				ValidateFunc: validation.StringInSlice([]string{"mysql"}, true),
 			},
 			"user": {
 				Type:        schema.TypeString,
 				Required:    true,
 				Description: "User name to use when connecting to server.",
-				DefaultFunc: schema.EnvDefaultFunc("ALTERNATOR_USER", ""),
 			},
 			"password": {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Sensitive:   true,
 				Description: "Password to use when connecting to server.",
-				DefaultFunc: schema.EnvDefaultFunc("ALTERNATOR_PASSWORD", ""),
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
@@ -74,13 +71,14 @@ func New() *schema.Provider {
 }
 
 func configure() func(context.Context, *schema.ResourceData) (interface{}, diag.Diagnostics) {
-	return func(cxt context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
-		params := &ProviderParams{
+	return func(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
+		args := &ProviderArguments{
 			Host:     d.Get("host").(string),
 			Dialect:  d.Get("dialect").(string),
 			User:     d.Get("user").(string),
 			Password: d.Get("password").(string),
 		}
-		return params, nil
+		tflog.Debug(ctx, fmt.Sprintf("@provider arguments: %+v", args))
+		return args, nil
 	}
 }

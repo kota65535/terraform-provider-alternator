@@ -11,6 +11,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
+//go:embed test/provider.tf
+var provider string
+
 //go:embed test/initial_schema.sql
 var initialSchema string
 
@@ -106,33 +109,36 @@ func TestAccResourceAlternatorDatabaseSchema(t *testing.T) {
 
 func testAccResourceAlternatorDatabaseSchemaInitialConfig() string {
 	return fmt.Sprintf(`
+    %s
 	resource "alternator_database_schema" "main" {
         database = "example"
         schema = <<EOT
 		%s
 		EOT
 	}
-	`, initialSchema)
+	`, provider, initialSchema)
 }
 
 func testAccResourceAlternatorDatabaseSchemaUpdatedConfig() string {
 	return fmt.Sprintf(`
+    %s
 	resource "alternator_database_schema" "main" {
         database = "example"
         schema = <<EOT
 		%s
 		EOT
 	}
-	`, updatedSchema)
+	`, provider, updatedSchema)
 }
 
 func testAccResourceAlternatorDatabaseSchemaAnotherConfig() string {
 	return fmt.Sprintf(`
+    %s
 	resource "alternator_database_schema" "main" {
         database = "example2"
         schema = <<EOT
 		%s
 		EOT
 	}
-	`, anotherSchema)
+	`, provider, anotherSchema)
 }
