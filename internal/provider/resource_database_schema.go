@@ -63,6 +63,12 @@ func resourceAlternatorDatabaseSchema() *schema.Resource {
 				database := d.Get("database").(string)
 				schemaStr := d.Get("schema").(string)
 				pp := meta.(*ProviderArguments)
+				// Provider's host argument is empty when it is specified by a resource output to be created.
+				if pp.Host == "" {
+					tflog.Debug(ctx, fmt.Sprintf("@diff host is empty. arguments: %+v", pp))
+					return nil
+				}
+
 				client, err := newAlternator(database, pp)
 				if err != nil {
 					return err
