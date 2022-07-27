@@ -65,7 +65,7 @@ func resourceAlternatorDatabaseSchema() *schema.Resource {
 				database := d.Get("database").(string)
 				schemaStr := d.Get("schema").(string)
 				pp := meta.(*ProviderArguments)
-				// Provider's host argument is empty when it is specified by a resource output to be created.
+				// Provider's host argument will be empty when it is a new resource output.
 				if pp.Host == "" {
 					tflog.Debug(ctx, fmt.Sprintf("@diff host is empty. arguments: %+v", pp))
 					return nil
@@ -172,6 +172,12 @@ func resourceAlternatorDatabaseSchemaRead(ctx context.Context, d *schema.Resourc
 	database := d.Get("database").(string)
 	schemaStr := d.Get("schema").(string)
 	pp := meta.(*ProviderArguments)
+	// Provider's host argument will be empty when it is a new resource output, which leads to the resource re-creation.
+	if pp.Host == "" {
+		tflog.Debug(ctx, fmt.Sprintf("@read host is empty. arguments: %+v", pp))
+		d.SetId("")
+		return nil
+	}
 
 	client, err := newAlternator(database, pp)
 	if err != nil {
