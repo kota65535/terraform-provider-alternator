@@ -83,12 +83,15 @@ func resourceAlternatorDatabaseSchema() *schema.Resource {
 				for _, s := range localSchema {
 					newRemoteSchemaStr += fmt.Sprintf("%s\n", s)
 				}
+				statements := alt.Statements()
 				tflog.Debug(ctx, fmt.Sprintf("@diff remote_schema: %s", newRemoteSchemaStr))
-				tflog.Debug(ctx, fmt.Sprintf("@diff statements: %s", alt.Statements()))
-
+				tflog.Debug(ctx, fmt.Sprintf("@diff statements: %s", statements))
 				err = d.SetNew("remote_schema", newRemoteSchemaStr)
+				if err != nil {
+					return err
+				}
 				// statements variable is only for showing diff on planning, and always empty value after applying it.
-				err = d.SetNew("statements", alt.Statements())
+				err = d.SetNew("statements", statements)
 				if err != nil {
 					return err
 				}
@@ -140,9 +143,18 @@ func resourceAlternatorDatabaseSchemaCreate(ctx context.Context, d *schema.Resou
 
 	// Currently database name is used for the resource ID
 	d.SetId(database)
-	d.Set("remote_schema", remoteSchemaStr)
-	d.Set("changed", false)
-	d.Set("statements", []string{})
+	err = d.Set("remote_schema", remoteSchemaStr)
+	if err != nil {
+		diag.FromErr(err)
+	}
+	err = d.Set("changed", false)
+	if err != nil {
+		diag.FromErr(err)
+	}
+	err = d.Set("statements", []string{})
+	if err != nil {
+		diag.FromErr(err)
+	}
 
 	return nil
 }
@@ -172,9 +184,18 @@ func resourceAlternatorDatabaseSchemaRead(ctx context.Context, d *schema.Resourc
 	tflog.Debug(ctx, fmt.Sprintf("@read remote_schema: %s", remoteSchemaStr))
 	tflog.Debug(ctx, fmt.Sprintf("@read changed: %t", changed))
 
-	d.Set("remote_schema", remoteSchemaStr)
-	d.Set("changed", changed)
-	d.Set("statements", []string{})
+	err = d.Set("remote_schema", remoteSchemaStr)
+	if err != nil {
+		diag.FromErr(err)
+	}
+	err = d.Set("changed", changed)
+	if err != nil {
+		diag.FromErr(err)
+	}
+	err = d.Set("statements", []string{})
+	if err != nil {
+		diag.FromErr(err)
+	}
 
 	return nil
 }
@@ -215,9 +236,18 @@ func resourceAlternatorDatabaseSchemaUpdate(ctx context.Context, d *schema.Resou
 
 	tflog.Debug(ctx, fmt.Sprintf("@update remote_schema: %s", remoteSchema))
 
-	d.Set("remote_schema", remoteSchemaStr)
-	d.Set("changed", false)
-	d.Set("statements", []string{})
+	err = d.Set("remote_schema", remoteSchemaStr)
+	if err != nil {
+		diag.FromErr(err)
+	}
+	err = d.Set("changed", false)
+	if err != nil {
+		diag.FromErr(err)
+	}
+	err = d.Set("statements", []string{})
+	if err != nil {
+		diag.FromErr(err)
+	}
 
 	return nil
 }
@@ -253,7 +283,10 @@ func resourceAlternatorDatabaseSchemaDelete(ctx context.Context, d *schema.Resou
 func resourceAlternatorDatabaseSchemaImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	database := d.Id()
 	tflog.Debug(ctx, fmt.Sprintf("@import id = %s", database))
-	d.Set("database", database)
+	err := d.Set("database", database)
+	if err != nil {
+		diag.FromErr(err)
+	}
 	return []*schema.ResourceData{d}, nil
 }
 
