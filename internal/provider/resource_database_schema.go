@@ -52,6 +52,8 @@ func resourceAlternatorDatabaseSchema() *schema.Resource {
 			},
 		},
 		CustomizeDiff: func(ctx context.Context, d *schema.ResourceDiff, meta interface{}) error {
+			tflog.Debug(ctx, fmt.Sprintf("@diff start"))
+
 			// We can easily detect change of the input variables in this way
 			localSchemaChanged := d.HasChange("schema")
 			// As for the computed variables, we cannot simply compare their old & new value,
@@ -100,12 +102,15 @@ func resourceAlternatorDatabaseSchema() *schema.Resource {
 				}
 			}
 
+			tflog.Debug(ctx, fmt.Sprintf("@diff end"))
 			return nil
 		},
 	}
 }
 
 func resourceAlternatorDatabaseSchemaCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	tflog.Debug(ctx, fmt.Sprintf("@create start"))
+
 	database := d.Get("database").(string)
 	schemaStr := d.Get("schema").(string)
 	pp := meta.(*ProviderArguments)
@@ -141,11 +146,8 @@ func resourceAlternatorDatabaseSchemaCreate(ctx context.Context, d *schema.Resou
 	for _, s := range remoteSchema {
 		remoteSchemaStr += fmt.Sprintf("%s\n", s)
 	}
-
 	tflog.Debug(ctx, fmt.Sprintf("@create remote_schema: %s", remoteSchemaStr))
 
-	// Currently database name is used for the resource ID
-	d.SetId(database)
 	err = d.Set("remote_schema", remoteSchemaStr)
 	if err != nil {
 		diag.FromErr(err)
@@ -158,11 +160,15 @@ func resourceAlternatorDatabaseSchemaCreate(ctx context.Context, d *schema.Resou
 	if err != nil {
 		diag.FromErr(err)
 	}
+	d.SetId(database)
 
+	tflog.Debug(ctx, fmt.Sprintf("@create end"))
 	return nil
 }
 
 func resourceAlternatorDatabaseSchemaRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	tflog.Debug(ctx, fmt.Sprintf("@read start"))
+
 	database := d.Get("database").(string)
 	schemaStr := d.Get("schema").(string)
 	pp := meta.(*ProviderArguments)
@@ -199,11 +205,15 @@ func resourceAlternatorDatabaseSchemaRead(ctx context.Context, d *schema.Resourc
 	if err != nil {
 		diag.FromErr(err)
 	}
+	d.SetId(database)
 
+	tflog.Debug(ctx, fmt.Sprintf("@read end"))
 	return nil
 }
 
 func resourceAlternatorDatabaseSchemaUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	tflog.Debug(ctx, fmt.Sprintf("@update start"))
+
 	database := d.Get("database").(string)
 	schemaStr := d.Get("schema").(string)
 	pp := meta.(*ProviderArguments)
@@ -251,11 +261,15 @@ func resourceAlternatorDatabaseSchemaUpdate(ctx context.Context, d *schema.Resou
 	if err != nil {
 		diag.FromErr(err)
 	}
+	d.SetId(database)
 
+	tflog.Debug(ctx, fmt.Sprintf("@update end"))
 	return nil
 }
 
 func resourceAlternatorDatabaseSchemaDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	tflog.Debug(ctx, fmt.Sprintf("@delete start"))
+
 	database := d.Get("database").(string)
 	pp := meta.(*ProviderArguments)
 
@@ -280,6 +294,7 @@ func resourceAlternatorDatabaseSchemaDelete(ctx context.Context, d *schema.Resou
 
 	d.SetId("")
 
+	tflog.Debug(ctx, fmt.Sprintf("@delete end"))
 	return nil
 }
 
@@ -290,6 +305,7 @@ func resourceAlternatorDatabaseSchemaImport(ctx context.Context, d *schema.Resou
 	if err != nil {
 		diag.FromErr(err)
 	}
+	d.SetId(database)
 	return []*schema.ResourceData{d}, nil
 }
 
