@@ -69,9 +69,12 @@ func resourceAlternatorDatabaseSchema() *schema.Resource {
 					return nil
 				}
 
+				// If the host argument has been changed, alternator initialization may fail with the old host value.
+				// We ignore the error here to continue the plan phase.
 				client, err := newAlternator(database, pp)
 				if err != nil {
-					return err
+					tflog.Debug(ctx, fmt.Sprintf("@diff failed to initialize alternator: %s", err.Error()))
+					return nil
 				}
 				// Read local schema
 				alt, _, localSchema, err := client.GetAlterations(schemaStr)
