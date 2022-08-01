@@ -79,13 +79,13 @@ func resourceAlternatorDatabaseSchema() *schema.Resource {
 					return nil
 				}
 				// Read local schema
-				alt, _, localSchema, err := client.GetAlterations(schemaStr)
+				alt, _, _, err := client.GetAlterations(schemaStr)
 				if err != nil {
 					return err
 				}
 				// Use local schema as new remote schema value to show diff on planing
 				newRemoteSchemaStr := ""
-				for _, s := range localSchema {
+				for _, s := range alt.ToString() {
 					newRemoteSchemaStr += fmt.Sprintf("%s\n", s)
 				}
 				statements := alt.Statements()
@@ -138,12 +138,12 @@ func resourceAlternatorDatabaseSchemaCreate(ctx context.Context, d *schema.Resou
 	}
 
 	// Fetch current remote database schemas
-	remoteSchema, err := client.FetchSchemas()
+	alt, _, _, err := client.GetAlterations(schemaStr)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 	remoteSchemaStr := ""
-	for _, s := range remoteSchema {
+	for _, s := range alt.FromString() {
 		remoteSchemaStr += fmt.Sprintf("%s\n", s)
 	}
 	tflog.Debug(ctx, fmt.Sprintf("@create remote_schema: %s", remoteSchemaStr))
@@ -185,12 +185,13 @@ func resourceAlternatorDatabaseSchemaRead(ctx context.Context, d *schema.Resourc
 	}
 	defer client.Close()
 
-	alt, remoteSchema, _, err := client.GetAlterations(schemaStr)
+	// Fetch current remote database schemas
+	alt, _, _, err := client.GetAlterations(schemaStr)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 	remoteSchemaStr := ""
-	for _, s := range remoteSchema {
+	for _, s := range alt.FromString() {
 		remoteSchemaStr += fmt.Sprintf("%s\n", s)
 	}
 
@@ -244,12 +245,12 @@ func resourceAlternatorDatabaseSchemaUpdate(ctx context.Context, d *schema.Resou
 	}
 
 	// Fetch current remote database schemas
-	remoteSchema, err := client.FetchSchemas()
+	alt, _, _, err = client.GetAlterations(schemaStr)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 	remoteSchemaStr := ""
-	for _, s := range remoteSchema {
+	for _, s := range alt.FromString() {
 		remoteSchemaStr += fmt.Sprintf("%s\n", s)
 	}
 
