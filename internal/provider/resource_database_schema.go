@@ -253,7 +253,7 @@ func resourceAlternatorDatabaseSchemaUpdate(ctx context.Context, d *schema.Resou
 		remoteSchemaStr += fmt.Sprintf("%s\n", s)
 	}
 
-	tflog.Debug(ctx, fmt.Sprintf("@update remote_schema: %s", remoteSchema))
+	tflog.Debug(ctx, fmt.Sprintf("@update remote_schema: %s", remoteSchemaStr))
 
 	err = d.Set("remote_schema", remoteSchemaStr)
 	if err != nil {
