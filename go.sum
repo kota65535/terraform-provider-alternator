@@ -164,8 +164,14 @@ github.com/jhump/protoreflect v1.6.0 h1:h5jfMVslIg6l29nsMs0D8Wj17RDVdNYti0vDN/PZ
 github.com/kevinburke/ssh_config v0.0.0-20201106050909-4977a11b4351 h1:DowS9hvgyYSX4TO5NpyC606/Z4SxnNYbT+WX27or6Ck=
 github.com/kevinburke/ssh_config v0.0.0-20201106050909-4977a11b4351/go.mod h1:CT57kijsi8u/K/BOFA39wgDQJ9CxiF4nAY/ojJ6r6mM=
 github.com/konsorten/go-windows-terminal-sequences v1.0.1/go.mod h1:T0+1ngSBFLxvqU3pZ+m/2kptfBszLMUkC4ZK/EgS/cQ=
+github.com/kota65535/alternator v0.1.11-0.20220801120641-2d5e6ef9b376 h1:qgOZ+XXyqeEDLEIYCePT5o5OjUVQ2tWhAibofr91z+o=
+github.com/kota65535/alternator v0.1.11-0.20220801120641-2d5e6ef9b376/go.mod h1:cRYXGGK2Hu19PFIK3lD+3wZ0otkj91mqMMTENJsBz7w=
 github.com/kota65535/alternator v0.1.11 h1:x9hHd5BV4n3KzRW0OOZvV7giQKJarOUPP1pWnWuoJKk=
 github.com/kota65535/alternator v0.1.11/go.mod h1:cRYXGGK2Hu19PFIK3lD+3wZ0otkj91mqMMTENJsBz7w=
+github.com/kota65535/alternator v0.1.12-0.20220801130518-a1458c69a8e2 h1:z4A0RtPaxYgWZxYsY3rmP6jUSZOy/U5ts+E81Yp62AA=
+github.com/kota65535/alternator v0.1.12-0.20220801130518-a1458c69a8e2/go.mod h1:cRYXGGK2Hu19PFIK3lD+3wZ0otkj91mqMMTENJsBz7w=
+github.com/kota65535/alternator v0.1.12 h1:6Oc4Oij8hTWQZTeSSvJH4TGkTfE00AAgHk3FIAS50JY=
+github.com/kota65535/alternator v0.1.12/go.mod h1:cRYXGGK2Hu19PFIK3lD+3wZ0otkj91mqMMTENJsBz7w=
 github.com/kr/pretty v0.1.0/go.mod h1:dAy3ld7l9f0ibDNOQOHHMYYIIbhfbHSm3C4ZsoJORNo=
 github.com/kr/pretty v0.2.1 h1:Fmg33tUaq4/8ym9TJN1x7sLJnHVwhP33CNkpYV/7rwI=
 github.com/kr/pretty v0.2.1/go.mod h1:ipq/a2n7PKx3OHsz4KJII5eveXtPO4qwEXGdVfWzfnI=
