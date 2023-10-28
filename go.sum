@@ -172,6 +172,8 @@ github.com/kota65535/alternator v0.1.12-0.20220801130518-a1458c69a8e2 h1:z4A0RtP
 github.com/kota65535/alternator v0.1.12-0.20220801130518-a1458c69a8e2/go.mod h1:cRYXGGK2Hu19PFIK3lD+3wZ0otkj91mqMMTENJsBz7w=
 github.com/kota65535/alternator v0.1.12 h1:6Oc4Oij8hTWQZTeSSvJH4TGkTfE00AAgHk3FIAS50JY=
 github.com/kota65535/alternator v0.1.12/go.mod h1:cRYXGGK2Hu19PFIK3lD+3wZ0otkj91mqMMTENJsBz7w=
+github.com/kota65535/alternator v0.1.13 h1:zFS1cmcrx+9349o1/KNtZ09V4SFfociKwEOQQbu8yTs=
+github.com/kota65535/alternator v0.1.13/go.mod h1:cRYXGGK2Hu19PFIK3lD+3wZ0otkj91mqMMTENJsBz7w=
 github.com/kr/pretty v0.1.0/go.mod h1:dAy3ld7l9f0ibDNOQOHHMYYIIbhfbHSm3C4ZsoJORNo=
 github.com/kr/pretty v0.2.1 h1:Fmg33tUaq4/8ym9TJN1x7sLJnHVwhP33CNkpYV/7rwI=
 github.com/kr/pretty v0.2.1/go.mod h1:ipq/a2n7PKx3OHsz4KJII5eveXtPO4qwEXGdVfWzfnI=
