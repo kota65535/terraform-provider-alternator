@@ -8,7 +8,7 @@ description: |-
 
 # alternator_database_schema (Resource)
 
-Manage SQL database schemas by Alternator.
+Manage SQL database schemas by [Alternator](https://github.com/kota65535/alternator).
 
 ## Example Usage
 

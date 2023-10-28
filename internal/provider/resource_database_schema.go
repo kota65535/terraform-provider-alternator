@@ -12,7 +12,7 @@ import (
 
 func resourceAlternatorDatabaseSchema() *schema.Resource {
 	return &schema.Resource{
-		Description:   "Manage SQL database schemas by Alternator.",
+		Description:   "Manage SQL database schemas by [Alternator](https://github.com/kota65535/alternator).",
 		CreateContext: resourceAlternatorDatabaseSchemaCreate,
 		ReadContext:   resourceAlternatorDatabaseSchemaRead,
 		UpdateContext: resourceAlternatorDatabaseSchemaUpdate,
