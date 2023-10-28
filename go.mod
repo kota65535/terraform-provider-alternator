@@ -6,7 +6,7 @@ require (
 	github.com/hashicorp/terraform-plugin-docs v0.8.1
 	github.com/hashicorp/terraform-plugin-log v0.6.0
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.19.0
-	github.com/kota65535/alternator v0.1.12
+	github.com/kota65535/alternator v0.1.13
 	github.com/stretchr/testify v1.8.0
 )
 
