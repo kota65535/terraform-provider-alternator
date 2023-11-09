@@ -1,6 +1,6 @@
 module github.com/kota65535/terraform-provider-alternator
 
-go 1.18
+go 1.21
 
 require (
 	github.com/hashicorp/terraform-plugin-docs v0.16.0
